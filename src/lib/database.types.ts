@@ -1,37 +1,27 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
-
-export interface Database {
+export type Database = {
   public: {
     Tables: {
       profiles: {
         Row: {
           id: string
           email: string
-          full_name: string | null
-          role: 'user' | 'admin'
+          full_name: string
+          role: string
           created_at: string
           updated_at: string
         }
         Insert: {
           id: string
           email: string
-          full_name?: string | null
-          role?: 'user' | 'admin'
+          full_name?: string
+          role?: string
           created_at?: string
           updated_at?: string
         }
         Update: {
-          id?: string
           email?: string
-          full_name?: string | null
-          role?: 'user' | 'admin'
-          created_at?: string
+          full_name?: string
+          role?: string
           updated_at?: string
         }
       }
@@ -40,75 +30,72 @@ export interface Database {
           id: string
           title: string
           description: string
-          location: string
           event_date: string
-          price: number
-          category: string
+          location: string
           capacity: number
           available_seats: number
-          image_url: string | null
-          organizer_id: string | null
+          price: number
+          category: string
+          organizer_id: string
+          status: string
           created_at: string
           updated_at: string
         }
         Insert: {
           id?: string
           title: string
-          description: string
-          location: string
+          description?: string
           event_date: string
-          price?: number
-          category: string
+          location: string
           capacity: number
-          available_seats: number
-          image_url?: string | null
-          organizer_id?: string | null
+          available_seats?: number
+          price: number
+          category?: string
+          organizer_id: string
+          status?: string
           created_at?: string
           updated_at?: string
         }
         Update: {
-          id?: string
           title?: string
           description?: string
-          location?: string
           event_date?: string
-          price?: number
-          category?: string
+          location?: string
           capacity?: number
           available_seats?: number
-          image_url?: string | null
-          organizer_id?: string | null
-          created_at?: string
+          price?: number
+          category?: string
+          organizer_id?: string
+          status?: string
           updated_at?: string
         }
       }
       bookings: {
         Row: {
           id: string
-          event_id: string
           user_id: string
+          event_id: string
           num_tickets: number
           total_price: number
-          status: 'confirmed' | 'cancelled'
+          status: string
           created_at: string
+          updated_at: string
         }
         Insert: {
           id?: string
-          event_id: string
           user_id: string
+          event_id: string
           num_tickets: number
           total_price: number
-          status?: 'confirmed' | 'cancelled'
+          status?: string
           created_at?: string
+          updated_at?: string
         }
         Update: {
-          id?: string
-          event_id?: string
-          user_id?: string
           num_tickets?: number
           total_price?: number
-          status?: 'confirmed' | 'cancelled'
-          created_at?: string
+          status?: string
+          updated_at?: string
         }
       }
     }
