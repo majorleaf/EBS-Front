@@ -36,7 +36,7 @@ interface Order {
 
 type Tab = 'overview' | 'events' | 'users' | 'orders';
 
-// ── Stat Card ────────────────────────────────────────────────────────────────
+// ── Stat Card ─
 function StatCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent: string }) {
   return (
     <div style={{
