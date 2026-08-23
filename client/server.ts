@@ -120,8 +120,28 @@ app.get('/api/health', async (req, res) => {
         return res.status(400).json({ error: 'booking_id and payment token required'})
     }
 
+    const client = await pool.connect();
+
     try {
         await client.query('BEGIN');
+
+        const checkQuery = `
+           SELECT * FROM bookings
+           WHERE id = $1 AND status = 'pending'
+           AND locked_at > NOW() - INTERNAL '10 minutes'
+           FOR UPDATE;
+        `;
+        const { rows } = await client.query(checkQuery, [booking_id]);
+        
+        if (rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: 'Booking expired or not found.'});
+        }
+
+        const booking = rows[0];
+        const amountInCents = Math.round(Number(booking.total_price) * 100);
+
+        
 
     } catch (error) {
         console.error(error, 'checkout error:')
