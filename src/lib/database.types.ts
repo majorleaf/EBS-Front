@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           event_id: string | null
           id: number
+          locked_at: string | null
           num_tickets: number | null
           status: string | null
           total_price: number | null
@@ -28,6 +29,7 @@ export type Database = {
           created_at?: string
           event_id?: string | null
           id?: number
+          locked_at?: string | null
           num_tickets?: number | null
           status?: string | null
           total_price?: number | null
@@ -37,6 +39,7 @@ export type Database = {
           created_at?: string
           event_id?: string | null
           id?: number
+          locked_at?: string | null
           num_tickets?: number | null
           status?: string | null
           total_price?: number | null
@@ -46,11 +49,11 @@ export type Database = {
       }
       events: {
         Row: {
-          availabla_seats: number | null
+          available_seats: number | null
           capacity: number | null
           category: string | null
           created_at: string
-          descriptions: string | null
+          description: string | null
           event_date: string | null
           id: number
           image_url: string | null
@@ -59,14 +62,14 @@ export type Database = {
           organizer_id: string | null
           price: number | null
           title: string | null
-          updated_at: number | null
+          updated_at: string | null
         }
         Insert: {
-          availabla_seats?: number | null
+          available_seats?: number | null
           capacity?: number | null
           category?: string | null
           created_at?: string
-          descriptions?: string | null
+          description?: string | null
           event_date?: string | null
           id?: number
           image_url?: string | null
@@ -75,14 +78,14 @@ export type Database = {
           organizer_id?: string | null
           price?: number | null
           title?: string | null
-          updated_at?: number | null
+          updated_at?: string | null
         }
         Update: {
-          availabla_seats?: number | null
+          available_seats?: number | null
           capacity?: number | null
           category?: string | null
           created_at?: string
-          descriptions?: string | null
+          description?: string | null
           event_date?: string | null
           id?: number
           image_url?: string | null
@@ -91,7 +94,7 @@ export type Database = {
           organizer_id?: string | null
           price?: number | null
           title?: string | null
-          updated_at?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }

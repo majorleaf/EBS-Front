@@ -20,7 +20,7 @@ const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 });
 
 
-app.get('/health', async (req, res) => {
+app.get('/api/health', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW() as current_time');
         res.json({ 
@@ -108,6 +108,23 @@ app.get('/health', async (req, res) => {
         console.error(error)
     } finally {
         client.release();
+    }
+  });
+
+
+  // checkout 
+  app.post('/api/bookings/checkout', async (req, res) => {
+    const { booking_id, payment_token } = req.body;
+
+    if (!booking_id || !payment_token ) {
+        return res.status(400).json({ error: 'booking_id and payment token required'})
+    }
+
+    try {
+        await client.query('BEGIN');
+
+    } catch (error) {
+        console.error(error, 'checkout error:')
     }
   })
 
