@@ -141,10 +141,58 @@ app.get('/api/health', async (req, res) => {
         const booking = rows[0];
         const amountInCents = Math.round(Number(booking.total_price) * 100);
 
-        
+        let charge;
+        try {
+            charge = await stripeClient.charges.create({
+                amount: amountInCents,
+                currency: 'usd',
+                source: payment_token,
+                description: `Booking #${booking_id} `,
+                metadata: {
+                    service: 'ebs',
+                    booking_id: String(booking_id)
+                }
+            });
+
+        } catch (error) {
+            console.error(error, 'stripe error:')
+        }
+
+        if (charge.status !== 'succeeded') {
+            await client.query('ROLLBACK');
+            return res.status(402).json({ error: 'Payment not completed.'});
+        }
+
+        // Payment succeeded .. .. confirm booking AND decrement available seats
+        const updateBookingQuery = `
+        UPDATE bookings 
+        SET status = 'confirmed'
+        WHERE id = $1
+        RETURNING *;
+        `;
+        const { rows: updatedBooking } = await client.query(updateBookingQuery, [booking_id]);
+
+        const updateEventQuery = `
+        UPDATE events
+        SET available_seats = available_seats - $1
+        WHERE id = $2;
+        `;
+        await client.query(updateEventQuery, [booking.num_tickets, booking.event_id]);
+
+        await client.query('COMMIT');
+
+        res.status(200).json({
+            message: 'Payment successful! Here is your ticket.',
+            ticket: updatedBooking[0]
+        });
+
 
     } catch (error) {
+        await client.query('ROLLBACK');
         console.error(error, 'checkout error:')
+        res.status(500).json({ error: 'Checkout failed due to server error'})
+    } finally {
+        client.release();
     }
   })
 
