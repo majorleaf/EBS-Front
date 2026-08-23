@@ -57,7 +57,31 @@ app.get('/health', async (req, res) => {
 
         const event = eventRows[0];
 
-        // Count seats that are already held by unexpired pending locks, overselling against holds that haven't 
+        // Count seats that are already held by unexpired pending locks, overselling against holds that haven't converted to confirmed bookings yet
+        const pendingQuery = `
+        SELECT COALESCE(SUM(num_tickets), 0) AS held
+        FROM bookings 
+        WHERE bookings
+        WHERE event_id = $1
+        AND status = 'pending'
+        AND locked_at > NOW() - INTERNAL '10 minutes';
+        `;
+        const { rows: pendingRows } = await client.query(pendingQuery, [event_id]);
+        const held = Number(pendingRows[0].held);
+
+        const trulyAvailable = event.available_seats - held;
+
+        if (num_tickets > trulyAvailable) {
+            await client.query('ROLLBACK');
+            return res.status(409).json({
+                error: 'Not enough seats available.',
+                available: trulyAvailable
+            });
+        }
+
+        //Create the pending hold 
+        const insertQuery = `
+        INSERT INTO bookings (event_id, user_)`
 
     } catch(error) {
         await client.query('ROLLBACK');
