@@ -81,7 +81,22 @@ app.get('/health', async (req, res) => {
 
         //Create the pending hold 
         const insertQuery = `
-        INSERT INTO bookings (event_id, user_)`
+        INSERT INTO bookings (event_id, user_id, num_tickets, total_price, status, locked_at)
+        VALUES ($1, $2, $3, $4, 'pending', NOW())
+        RETURNING *;
+        `;
+        const totalPrice = event.price * num_tickets
+        const { rows: bookingRows } = await client.query(insertQuery, [
+            event_id, user_id, num_tickets, totalPrice
+        ]);
+
+        await client.query('COMMIT');
+
+        res.status(201).json({
+            message: 'Seats held for 10 minutes.',
+            booking: bookingRows[0]
+        })
+ 
 
     } catch(error) {
         await client.query('ROLLBACK');
@@ -89,4 +104,10 @@ app.get('/health', async (req, res) => {
     } finally {
         client.release();
     }
+  })
+
+  const PORT = process.env.PORT || 8000;
+  
+  app.listen(PORT, () => {
+    console.log(`EBS backend running on ${PORT}`);
   })
