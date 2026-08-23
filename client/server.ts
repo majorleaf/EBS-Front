@@ -15,6 +15,11 @@ const pool = new Pool ({
     ssl: {rejectUnauthorized: false }
 });
 
+const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: "2024-06-20"
+});
+
+
 app.get('/health', async (req, res) => {
     try {
         const result = await pool.query('SELECT NOW() as current_time');
