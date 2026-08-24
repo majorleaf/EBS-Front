@@ -111,13 +111,12 @@ app.get('/api/health', async (req, res) => {
     }
   });
 
-
-  // checkout 
-  app.post('/api/bookings/checkout', async (req, res) => {
+// POST /api/bookings/checkout
+app.post('/api/bookings/checkout', async (req, res) => {
     const { booking_id, payment_token } = req.body;
 
-    if (!booking_id || !payment_token ) {
-        return res.status(400).json({ error: 'booking_id and payment token required'})
+    if (!booking_id || !payment_token) {
+        return res.status(400).json({ error: 'booking_id and payment_token are required' });
     }
 
     const client = await pool.connect();
@@ -126,16 +125,16 @@ app.get('/api/health', async (req, res) => {
         await client.query('BEGIN');
 
         const checkQuery = `
-           SELECT * FROM bookings
-           WHERE id = $1 AND status = 'pending'
-           AND locked_at > NOW() - INTERNAL '10 minutes'
-           FOR UPDATE;
+            SELECT * FROM bookings
+            WHERE id = $1 AND status = 'pending'
+            AND locked_at > NOW() - INTERVAL '10 minutes'
+            FOR UPDATE;
         `;
         const { rows } = await client.query(checkQuery, [booking_id]);
-        
+
         if (rows.length === 0) {
             await client.query('ROLLBACK');
-            return res.status(400).json({ error: 'Booking expired or not found.'});
+            return res.status(400).json({ error: 'Booking expired or not found.' });
         }
 
         const booking = rows[0];
@@ -147,35 +146,36 @@ app.get('/api/health', async (req, res) => {
                 amount: amountInCents,
                 currency: 'usd',
                 source: payment_token,
-                description: `Booking #${booking_id} `,
+                description: `Booking #${booking_id}`,
                 metadata: {
                     service: 'ebs',
                     booking_id: String(booking_id)
                 }
             });
-
-        } catch (error) {
-            console.error(error, 'stripe error:')
+        } catch (stripeError: any) {
+            await client.query('ROLLBACK');
+            console.error('Stripe error:', stripeError.message);
+            return res.status(402).json({ error: 'Payment failed.', detail: stripeError.message });
         }
 
         if (charge.status !== 'succeeded') {
             await client.query('ROLLBACK');
-            return res.status(402).json({ error: 'Payment not completed.'});
+            return res.status(402).json({ error: 'Payment not completed.' });
         }
 
-        // Payment succeeded .. .. confirm booking AND decrement available seats
+        // Payment succeeded — confirm booking AND decrement available seats
         const updateBookingQuery = `
-        UPDATE bookings 
-        SET status = 'confirmed'
-        WHERE id = $1
-        RETURNING *;
+            UPDATE bookings
+            SET status = 'confirmed'
+            WHERE id = $1
+            RETURNING *;
         `;
         const { rows: updatedBooking } = await client.query(updateBookingQuery, [booking_id]);
 
         const updateEventQuery = `
-        UPDATE events
-        SET available_seats = available_seats - $1
-        WHERE id = $2;
+            UPDATE events
+            SET available_seats = available_seats - $1
+            WHERE id = $2;
         `;
         await client.query(updateEventQuery, [booking.num_tickets, booking.event_id]);
 
@@ -186,18 +186,20 @@ app.get('/api/health', async (req, res) => {
             ticket: updatedBooking[0]
         });
 
-
     } catch (error) {
         await client.query('ROLLBACK');
-        console.error(error, 'checkout error:')
-        res.status(500).json({ error: 'Checkout failed due to server error'})
+        console.error('Checkout error:', error);
+        res.status(500).json({ error: 'Checkout failed due to a server error.' });
     } finally {
         client.release();
     }
-  })
+});
 
-  const PORT = process.env.PORT || 8000;
-  
-  app.listen(PORT, () => {
+
+
+const PORT = process.env.PORT || 4000;
+
+app.listen(PORT, () => {
     console.log(`EBS backend running on ${PORT}`);
-  })
+});
+
