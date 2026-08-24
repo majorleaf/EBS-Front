@@ -22,10 +22,10 @@ export function EventDetails() {
   const [bookingError, setBookingError] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
-  // ✅ Fix #1: useRef to track redirect timeout — prevents state update on unmounted component
+  //  Fix #1: useRef to track redirect timeout — prevents state update on unmounted component
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // ✅ Fix #2: loadEvent wrapped in useCallback with `id` as its dependency
+  //  Fix #2: loadEvent wrapped in useCallback with `id` as its dependency
   const loadEvent = useCallback(async () => {
     if (!id) return;
 
@@ -47,9 +47,9 @@ export function EventDetails() {
 
   useEffect(() => {
     loadEvent();
-  }, [loadEvent]); // ✅ dep array now satisfied
+  }, [loadEvent]); //  dep array now satisfied
 
-  // ✅ Fix #3: Clean up the redirect timer on unmount to avoid memory leaks
+  //  Fix #3: Clean up the redirect timer on unmount to avoid memory leaks
   useEffect(() => {
     return () => {
       if (redirectTimerRef.current) {
@@ -83,6 +83,19 @@ export function EventDetails() {
     setBookingLoading(true);
 
     try {
+       // locking the seats
+       const lockResponse = await ('http://localhost:8000/api/bookings/lock', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          event_id: event.id,
+          user_id: user.id,
+          num_tickets: numTickets,
+        }),
+       });
+
+       const lockData = await lockResponse.json();
+       \
       const { error } = await supabase.from('bookings').insert({
         event_id: event.id,
         user_id: user.id,
@@ -95,7 +108,7 @@ export function EventDetails() {
 
       setBookingSuccess(true);
 
-      // ✅ Fix #1 cont: Store timer ref so it can be cleared on unmount
+      // Fix #1 cont: Store timer ref so it can be cleared on unmount
       redirectTimerRef.current = setTimeout(() => {
         setShowBookingModal(false);
         navigate('/dashboard');
@@ -139,7 +152,7 @@ export function EventDetails() {
     minute: '2-digit',
   });
 
-  // ✅ Fix #4: Null-safe price display — guard against null event.price
+  // Fix #4: Null-safe price display — guard against null event.price
   const price = event.price ?? 0;
   const formattedPrice = price === 0 ? 'Free' : `$${price.toFixed(2)}`;
 
