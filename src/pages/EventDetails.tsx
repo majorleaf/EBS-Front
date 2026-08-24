@@ -82,17 +82,17 @@ export function EventDetails() {
     setBookingError('');
     setBookingLoading(true);
 
-    try {
+  try {
        // locking the seats
-       const lockResponse = await fetch('http://localhost:8000/api/bookings/lock', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json'},
-        body: JSON.stringify({
-          event_id: event.id,
-          user_id: user.id,
-          num_tickets: numTickets,
-        }),
-       });
+    const lockResponse = await fetch('http://localhost:8000/api/bookings/lock', {
+    method: 'POST',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+      event_id: event.id,
+      user_id: user.id,
+      num_tickets: numTickets,
+       }),
+    });
 
        const lockData = await lockResponse.json();
        
@@ -102,9 +102,23 @@ export function EventDetails() {
         return;
        }
 
-       const checkoutResponse = await fetch('https://localhost:8000/api/bookings/checkout', {
+      const checkoutResponse = await fetch('https://localhost:8000/api/bookings/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({
+         booking_id: lockData.booking.id,
+         payment_token: 'tok_visa',
+        }),
+       });
 
-       })
+       const checkoutData = await checkoutResponse.json();
+       
+       if (!checkoutResponse.ok) {
+        setBookingError(checkoutData.error || 'payment failed. please try again.');
+        setBookingLoading(false);
+        return;
+       }
+
       setBookingSuccess(true);
 
       // Fix #1 cont: Store timer ref so it can be cleared on unmount
