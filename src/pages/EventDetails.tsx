@@ -84,7 +84,7 @@ export function EventDetails() {
 
     try {
        // locking the seats
-       const lockResponse = await ('http://localhost:8000/api/bookings/lock', {
+       const lockResponse = await fetch('http://localhost:8000/api/bookings/lock', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({
@@ -95,17 +95,16 @@ export function EventDetails() {
        });
 
        const lockData = await lockResponse.json();
-       \
-      const { error } = await supabase.from('bookings').insert({
-        event_id: event.id,
-        user_id: user.id,
-        num_tickets: numTickets,
-        total_price: event.price * numTickets,
-        status: 'confirmed',
-      });
+       
+       if (!lockResponse.ok) {
+        setBookingError(lockData.console.error || 'Failed to hold booking. Try again ');
+        setBookingLoading(false);
+        return;
+       }
 
-      if (error) throw error;
+       const checkoutResponse = await fetch('https://localhost:8000/api/bookings/checkout', {
 
+       })
       setBookingSuccess(true);
 
       // Fix #1 cont: Store timer ref so it can be cleared on unmount
