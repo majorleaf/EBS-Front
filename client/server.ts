@@ -241,7 +241,13 @@ app.post('/api/bookings/cancel', async (req, res) => {
             booking: updated[0]
         });
 
-    } 
+    }  catch (error) {
+        await client.query('ROLLBACK');
+        console.error(error, ' Cancel error:');
+        res.status(500).json({ error: 'Failed to cancel booking.'});
+    } finally {
+        client.release();
+    }
 })
 
 
