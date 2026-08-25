@@ -84,6 +84,7 @@ export function EventDetails() {
 
   try {
        // locking the seats
+       console.log('event.id:', event.id, 'user.id:', user.id, 'numTickets:', numTickets);
     const lockResponse = await fetch('http://localhost:8000/api/bookings/lock', {
     method: 'POST',
       headers: { 'Content-Type': 'application/json'},
@@ -102,7 +103,7 @@ export function EventDetails() {
         return;
        }
 
-      const checkoutResponse = await fetch('https://localhost:8000/api/bookings/checkout', {
+      const checkoutResponse = await fetch('http://localhost:8000/api/bookings/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({

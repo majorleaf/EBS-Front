@@ -17,7 +17,7 @@ export type Database = {
       bookings: {
         Row: {
           created_at: string
-          event_id: string | null
+          event_id: number | null
           id: number
           locked_at: string | null
           num_tickets: number | null
@@ -27,7 +27,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          event_id?: string | null
+          event_id?: number | null
           id?: number
           locked_at?: string | null
           num_tickets?: number | null
@@ -37,7 +37,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          event_id?: string | null
+          event_id?: number | null
           id?: number
           locked_at?: string | null
           num_tickets?: number | null
