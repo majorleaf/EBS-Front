@@ -188,7 +188,7 @@ app.post('/api/bookings/checkout', async (req, res) => {
     } catch (error) {
         await client.query('ROLLBACK');
         console.error('Checkout error:', error);
-        res.status(500).json({ error: 'Checkout failed due to a server error.' });
+        res.status(500).json({ error: 'One active booking per user .' });
     } finally {
         client.release();
     }
