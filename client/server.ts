@@ -195,6 +195,18 @@ app.post('/api/bookings/checkout', async (req, res) => {
 });
 
 
+//POST /api/bookings/cancel
+app.post('/api/bookings/cancel', async (req, res) => {
+    const { booking_id, user_id } = req.body;
+
+    if (!booking_id || !user_id) {
+        return res.status(400).json({ error: 'booking_id and user_id are required'});
+    }
+
+    const client = await pool.connect();
+})
+
+
 
 const PORT = process.env.PORT || 8000;
 
