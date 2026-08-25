@@ -225,7 +225,23 @@ app.post('/api/bookings/cancel', async (req, res) => {
             await client.query('ROLLBACK');
             return res.status(400).json({ error: 'only confrimed bookings can be cancelled.'})
         }
-    }
+
+        const updateQuery =  `
+        UPDATE bookings 
+        SET status = 'cancelled'
+        WHERE id = $1
+        RETURNING *;
+        `;
+        const { rows: updated } = await client.query(updateQuery, [booking_id]);
+
+        await client.query('COMMIT');
+
+        res.status(200).json({
+            message: 'Booking cancelled.',
+            booking: updated[0]
+        });
+
+    } 
 })
 
 
