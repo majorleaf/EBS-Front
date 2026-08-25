@@ -190,6 +190,8 @@ export function Dashboard() {
         alert(data.error || 'Failed to cancel booking. Please try again.');
         return;
       }
+
+      await loadBookings();
     } catch (error) {
       console.error('Booking not cancelled:', error);
       alert('Failed to cancel booking. Please try again. ');
