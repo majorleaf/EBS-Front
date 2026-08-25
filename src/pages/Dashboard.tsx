@@ -167,25 +167,36 @@ export function Dashboard() {
 
   // ✅ Fix #5: Replaced window.confirm/alert with console-based feedback.
   // TODO: Replace with a proper modal/toast component for production use.
-  const handleCancelBooking = async (bookingId: string) => {
-    const confirmed = window.confirm('Are you sure you want to cancel this booking?');
+   const handleCancelBooking = async (bookingId: string) => {
+    const confirmed = window.confirm('Are you sure want to cancel this booking?')
     if (!confirmed) return;
 
+    if (!user) return;
+
     try {
-      const { error } = await supabase
-        .from('bookings')
-        .update({ status: 'cancelled' })
-        .eq('id', bookingId);
+      const response = await fetch ('http://localhost:8000/api/bookings/cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          booking_id: bookingId,
+          user_id: user.id,
+        }),
+      });
 
-      if (error) throw error;
+      const data = await response.json();
 
-      await loadBookings();
+      if (!response.ok) {
+        console.error('Error cancelling booking:', data.error);
+        alert(data.error || 'Failed to cancel booking. Please try again.');
+        return;
+      }
     } catch (error) {
-      console.error('Error cancelling booking:', error);
-      // TODO: Replace with toast notification (e.g. react-hot-toast or shadcn/ui toast)
-      alert('Failed to cancel booking. Please try again.');
+      console.error('Booking not cancelled:', error);
+      alert('Failed to cancel booking. Please try again. ');
     }
   };
+
+
 
   const handleNavigateToEvent = (eventId: string) => {
     navigate(`/events/${eventId}`);
