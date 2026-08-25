@@ -65,11 +65,10 @@ app.get('/api/health', async (req, res) => {
         // Count seats that are already held by unexpired pending locks, overselling against holds that haven't converted to confirmed bookings yet
         const pendingQuery = `
         SELECT COALESCE(SUM(num_tickets), 0) AS held
-        FROM bookings 
-        WHERE bookings
+        FROM bookings
         WHERE event_id = $1
         AND status = 'pending'
-        AND locked_at > NOW() - INTERNAL '10 minutes';
+        AND locked_at > NOW() - INTERVAL '10 minutes';
         `;
         const { rows: pendingRows } = await client.query(pendingQuery, [event_id]);
         const held = Number(pendingRows[0].held);
@@ -197,7 +196,7 @@ app.post('/api/bookings/checkout', async (req, res) => {
 
 
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
     console.log(`EBS backend running on ${PORT}`);

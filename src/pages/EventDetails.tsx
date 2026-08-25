@@ -97,7 +97,7 @@ export function EventDetails() {
        const lockData = await lockResponse.json();
        
        if (!lockResponse.ok) {
-        setBookingError(lockData.console.error || 'Failed to hold booking. Try again ');
+        setBookingError(lockData.error || 'Failed to hold booking. Try again ');
         setBookingLoading(false);
         return;
        }
