@@ -204,6 +204,28 @@ app.post('/api/bookings/cancel', async (req, res) => {
     }
 
     const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        const checkQuery = `
+        SELECT * FROM bookings 
+        WHERE id = $1 AND user_id = $2 
+        FOR UPDATE;
+        `;
+        const { rows } = await client.query(checkQuery, [booking_id, user_id]);
+
+        if (rows.length === 0) {
+            await client.query('ROLLBACK');
+            return res.status(404).json({ error: 'Booking not found'});
+        }
+        const booking = rows[0];
+
+        if (booking.status !== 'confirmed') {
+            await client.query('ROLLBACK');
+            return res.status(400).json({ error: 'only confrimed bookings can be cancelled.'})
+        }
+    }
 })
 
 
