@@ -174,7 +174,7 @@ export function Dashboard() {
     if (!user) return;
 
     try {
-      const response = await fetch ('http://localhost:8000/api/bookings/cancel', {
+      const response = await fetch (`${import.meta.env.VITE_SUPABASE_URL}http://localhost:8000/api/bookings/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({
