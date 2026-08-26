@@ -14,7 +14,7 @@ interface BookingWithEvent extends Booking {
   event: Event;
 }
 
-// ✅ Fix #1: Moved BookingCard OUTSIDE Dashboard to prevent re-creation on every render
+// moved BookingCard OUTSIDE Dashboard to prevent re-creation on every render
 interface BookingCardProps {
   booking: BookingWithEvent;
   onCancel: (id: string) => void;
@@ -35,7 +35,7 @@ const BookingCard = ({ booking, onCancel, onNavigate }: BookingCardProps) => {
 
   const isUpcoming = eventDate >= new Date() && booking.status === 'confirmed';
 
-  // ✅ Fix #4: Guard against null total_price before calling .toFixed()
+  //Guard against null total_price before calling .toFixed()
   const price = booking.total_price ?? 0;
   const formattedPrice = price === 0 ? 'Free' : `$${price.toFixed(2)}`;
 
@@ -121,7 +121,7 @@ export function Dashboard() {
   const [pastBookings, setPastBookings] = useState<BookingWithEvent[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fix #2: Wrapped in useCallback and added to useEffect dependency array
+  //Wrapped in useCallback and added to useEffect dependency array
   const loadBookings = useCallback(async () => {
     if (!user) return;
 
@@ -141,7 +141,7 @@ export function Dashboard() {
       const upcoming: BookingWithEvent[] = [];
       const past: BookingWithEvent[] = [];
 
-      // ✅ Fix #3: Replaced `any` with the proper BookingWithEvent type
+      //Replaced `any` with the proper BookingWithEvent type
       data?.forEach((booking: BookingWithEvent) => {
         if (new Date(booking.event.event_date) >= now && booking.status === 'confirmed') {
           upcoming.push(booking);
@@ -163,9 +163,9 @@ export function Dashboard() {
     if (user) {
       loadBookings();
     }
-  }, [user, loadBookings]); // ✅ Fix #2 cont: loadBookings now properly listed as dependency
+  }, [user, loadBookings]); //loadBookings now properly listed as dependency
 
-  // ✅ Fix #5: Replaced window.confirm/alert with console-based feedback.
+  //Replaced window.confirm/alert with console-based feedback.
   // TODO: Replace with a proper modal/toast component for production use.
    const handleCancelBooking = async (bookingId: string) => {
     const confirmed = window.confirm('Are you sure want to cancel this booking?')
