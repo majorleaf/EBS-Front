@@ -17,8 +17,8 @@ interface BookingWithEvent extends Booking {
 // moved BookingCard OUTSIDE Dashboard to prevent re-creation on every render
 interface BookingCardProps {
   booking: BookingWithEvent;
-  onCancel: (id: string) => void;
-  onNavigate: (id: string) => void;
+  onCancel: (id: number) => void;
+  onNavigate: (id: number) => void;
 }
 
 const BookingCard = ({ booking, onCancel, onNavigate }: BookingCardProps) => {
@@ -167,7 +167,7 @@ export function Dashboard() {
 
   //Replaced window.confirm/alert with console-based feedback.
   // TODO: Replace with a proper modal/toast component for production use.
-   const handleCancelBooking = async (bookingId: string) => {
+   const handleCancelBooking = async (bookingId: number) => {
     const confirmed = window.confirm('Are you sure want to cancel this booking?')
     if (!confirmed) return;
 
@@ -200,7 +200,7 @@ export function Dashboard() {
 
 
 
-  const handleNavigateToEvent = (eventId: string) => {
+  const handleNavigateToEvent = (eventId: number) => {
     navigate(`/events/${eventId}`);
   };
 
