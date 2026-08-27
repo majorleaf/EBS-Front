@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.1"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
@@ -23,6 +23,7 @@ export type Database = {
           num_tickets: number | null
           status: string | null
           total_price: number | null
+          updated_at: string | null
           user_id: string | null
         }
         Insert: {
@@ -33,6 +34,7 @@ export type Database = {
           num_tickets?: number | null
           status?: string | null
           total_price?: number | null
+          updated_at?: string | null
           user_id?: string | null
         }
         Update: {
@@ -43,57 +45,66 @@ export type Database = {
           num_tickets?: number | null
           status?: string | null
           total_price?: number | null
+          updated_at?: string | null
           user_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_bookings_event"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       events: {
         Row: {
-          available_seats: number | null
+          available_seats: number
           capacity: number | null
           category: string | null
           created_at: string
-          description: string | null
+          description: string
           event_date: string | null
           id: number
           image_url: string | null
           is_deleted: boolean | null
-          location: string | null
+          location: string
           organizer_id: string | null
-          price: number | null
-          title: string | null
+          price: number
+          title: string
           updated_at: string | null
         }
         Insert: {
-          available_seats?: number | null
+          available_seats: number
           capacity?: number | null
           category?: string | null
           created_at?: string
-          description?: string | null
+          description: string
           event_date?: string | null
           id?: number
           image_url?: string | null
           is_deleted?: boolean | null
-          location?: string | null
+          location: string
           organizer_id?: string | null
-          price?: number | null
-          title?: string | null
+          price: number
+          title: string
           updated_at?: string | null
         }
         Update: {
-          available_seats?: number | null
+          available_seats?: number
           capacity?: number | null
           category?: string | null
           created_at?: string
-          description?: string | null
+          description?: string
           event_date?: string | null
           id?: number
           image_url?: string | null
           is_deleted?: boolean | null
-          location?: string | null
+          location?: string
           organizer_id?: string | null
-          price?: number | null
-          title?: string | null
+          price?: number
+          title?: string
           updated_at?: string | null
         }
         Relationships: []
