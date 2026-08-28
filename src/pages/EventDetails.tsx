@@ -33,7 +33,7 @@ export function EventDetails() {
       const { data, error } = await supabase
         .from('events')
         .select('*')
-        .eq('id', id)
+        .eq('id', Number(id))
         .maybeSingle();
 
       if (error) throw error;
@@ -154,17 +154,27 @@ export function EventDetails() {
     );
   }
 
-  const eventDate = new Date(event.event_date);
-  const formattedDate = eventDate.toLocaleDateString('en-US', {
+  const eventDate = new Date(event?.event_date || '');
+//Only format the date if it is actually valid
+  const isValidDate = !isNaN(eventDate.getTime());
+
+  const formattedDate = isValidDate
+  ? eventDate.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
     year: 'numeric',
-  });
-  const formattedTime = eventDate.toLocaleTimeString('en-US', {
+  })
+  : 'Date not available';
+  
+
+  const formattedTime = isValidDate
+  ? eventDate.toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
-  });
+  })
+  : 'Time not available';
+  
 
   // Fix #4: Null-safe price display — guard against null event.price
   const price = event.price ?? 0;
