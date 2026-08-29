@@ -22,16 +22,24 @@ interface BookingCardProps {
 }
 
 const BookingCard = ({ booking, onCancel, onNavigate }: BookingCardProps) => {
-  const eventDate = new Date(booking.event.event_date);
-  const formattedDate = eventDate.toLocaleDateString('en-US', {
+  const eventDate = new Date(booking.event.event_date || '');
+
+  // Only format the date ,if its actually valid 
+  const isValidDate = !isNaN(eventDate.getTime());
+
+  const formattedDate = isValidDate 
+  ? eventDate.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
-  const formattedTime = eventDate.toLocaleTimeString('en-US', {
+  })
+  : 'Date not available';
+  const formattedTime = isValidDate 
+  ? eventDate.toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
-  });
+  })
+  : 'Time not available';
 
   const isUpcoming = eventDate >= new Date() && booking.status === 'confirmed';
 
