@@ -663,7 +663,7 @@ import { useState, useEffect } from 'react';
                   <textarea                                                                                                                                                                                
                     rows={3}                                                                                                                                                                               
                     placeholder="Event details and agenda..."                                                                                                                                              
-                    value={eventModal.descriptions ?? ''}                                                                                                                                                  
+                    value={eventModal.description ?? ''}                                                                                                                                                  
                     onChange={e => setEventModal(prev => ({ ...prev, descriptions: e.target.value }))}                                                                                                     
                     style={{ ...input, resize: 'vertical' }}                                                                                                                                               
                   />                                                                                                                                                                                       
