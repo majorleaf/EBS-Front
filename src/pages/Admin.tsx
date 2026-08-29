@@ -53,14 +53,22 @@ import { useState, useEffect } from 'react';
       const s = map[status?.toLowerCase() ?? ''] ?? map.draft;                                                                                                                                             
       return (                                                                                                                                                                                             
         <span style={{                                                                                                                                                                                     
-          background: s.bg, color: s.color,                                                                                                                                                                
-          fontSize: 11, fontWeight: 600, letterSpacing: '0.06em',                                                                                                                                          
-          padding: '3px 10px', borderRadius: 20, textTransform: 'uppercase',                                                                                                                               
-        }}>{status ?? 'draft'}</span>                                                                                                                                                                      
+          background: s.bg,
+           color: s.color,                                                                                                                                                                
+          fontSize: 11,
+           fontWeight: 600,
+            letterSpacing: '0.06em',                                                                                                                                          
+          padding: '3px 10px',
+           borderRadius: 20,
+            textTransform: 'uppercase',                                                                                                                               
+        }}
+        >
+          {status ?? 'draft'}
+          </span>                                                                                                                                                                      
       );                                                                                                                                                                                                   
     }                                                                                                                                                                                                      
                                                                                                                                                                                                            
-    // ── Helper to format date for datetime-local input ───────────────────────────                                                                                                                       
+    // Helper to format date for datetime-local input                                                                                                                       
     function formatDateForInput(isoDate: string | null | undefined): string {                                                                                                                              
       if (!isoDate) return '';                                                                                                                                                                             
       try {                                                                                                                                                                                                
@@ -73,7 +81,7 @@ import { useState, useEffect } from 'react';
       }                                                                                                                                                                                                    
     }                                                                                                                                                                                                      
                                                                                                                                                                                                            
-    // ── Main Admin Component ─────────────────────────────────────────────────────                                                                                                                       
+    //  Main Admin Component
     export function Admin() {                                                                                                                                                                              
       const { user, isAdmin, loading: authLoading } = useAuth();                                                                                                                                           
       const [tab, setTab] = useState<Tab>('overview');                                                                                                                                                     
@@ -81,14 +89,16 @@ import { useState, useEffect } from 'react';
       const [users, setUsers]       = useState<Profile[]>([]);                                                                                                                                             
       const [events, setEvents]     = useState<Event[]>([]);                                                                                                                                               
       const [bookings, setBookings] = useState<BookingWithDetails[]>([]);                                                                                                                                  
-      const [loading, setLoading]   = useState(true);                                                                                                                                                      
-      const [toast, setToast]       = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);                                                                                                          
+      const [loading, setLoading]   = useState(true); 
+      
+      //small tranient success/error message shown bottom-right.
+      const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);                                                                                                          
                                                                                                                                                                                                            
-      // modal states                                                                                                                                                                                      
+      // modal states = event create/edit modal: null= closed, object = open with these values                                                                                                                                                                                 
       const [eventModal, setEventModal] = useState<Partial<Event> | null>(null);                                                                                                                           
       const [saving, setSaving] = useState(false);                                                                                                                                                         
                                                                                                                                                                                                            
-      // filters                                                                                                                                                                                           
+      // filters for the users and booking tabs                                                                                                                                                                                    
       const [userSearch, setUserSearch]     = useState('');                                                                                                                                                
       const [orderFilter, setOrderFilter]   = useState('all');                                                                                                                                             
                                                                                                                                                                                                            
@@ -96,7 +106,11 @@ import { useState, useEffect } from 'react';
         setToast({ msg, type });                                                                                                                                                                           
         setTimeout(() => setToast(null), 3000);                                                                                                                                                            
       };                                                                                                                                                                                                   
-                                                                                                                                                                                                           
+                             
+      //Loads users, events, and bookings in parallel, then stiches bookings
+      // together with their related profile/event client-side. This sidesteps
+      // relying on a PostgREST foreign-key relationship existing/being named
+      //exactly as expected.
       const fetchAll = async () => {                                                                                                                                                                       
         setLoading(true);                                                                                                                                                                                  
         try {                                                                                                                                                                                              
@@ -113,7 +127,7 @@ import { useState, useEffect } from 'react';
           setUsers(profilesData);                                                                                                                                                                          
           setEvents(eventsData);                                                                                                                                                                           
                                                                                                                                                                                                            
-          // Client-side relational mapping to avoid PostgREST foreign key schema mismatch                                                                                                                 
+          // Build lookup maps once , then join in-memory rather than one query per row                                                                                                               
           const profilesMap = new Map(profilesData.map(p => [p.id, p]));                                                                                                                                   
           const eventsMap = new Map(eventsData.map(e => [String(e.id), e]));                                                                                                                               
                                                                                                                                                                                                            
@@ -138,7 +152,7 @@ import { useState, useEffect } from 'react';
         }                                                                                                                                                                                                  
       }, [isAdmin]);                                                                                                                                                                                       
                                                                                                                                                                                                            
-      // ── User role toggle ───────────────────────────────────────────────────────                                                                                                                       
+      //  User role toggle
       const toggleRole = async (id: string, current: string | null) => {                                                                                                                                   
         if (user?.id === id && current === 'admin') {                                                                                                                                                      
           if (!confirm('Warning: You are removing admin privileges from your own account. Continue?')) {                                                                                                   
@@ -152,7 +166,7 @@ import { useState, useEffect } from 'react';
         showToast(`Role updated to ${next}`);                                                                                                                                                              
       };                                                                                                                                                                                                   
                                                                                                                                                                                                            
-      // ── Event save ─────────────────────────────────────────────────────────────                                                                                                                       
+      // Event save 
       const saveEvent = async () => {                                                                                                                                                                      
         if (!eventModal) return;                                                                                                                                                                           
         setSaving(true);                                                                                                                                                                                   
@@ -166,11 +180,11 @@ import { useState, useEffect } from 'react';
               .from('events')                                                                                                                                                                              
               .update({                                                                                                                                                                                    
                 title: fields.title,                                                                                                                                                                       
-                descriptions: fields.descriptions,                                                                                                                                                         
+                descriptions: fields.description,                                                                                                                                                         
                 event_date: fields.event_date ? new Date(fields.event_date).toISOString() : null,                                                                                                          
                 location: fields.location,                                                                                                                                                                 
                 capacity: fields.capacity,                                                                                                                                                                 
-                availabla_seats: fields.availabla_seats ?? fields.capacity,                                                                                                                                
+                availabla_seats: fields.available_seats ?? fields.capacity,                                                                                                                                
                 price: fields.price,                                                                                                                                                                       
                 category: fields.category ?? 'General',                                                                                                                                                    
               })                                                                                                                                                                                           
@@ -183,11 +197,11 @@ import { useState, useEffect } from 'react';
               .from('events')                                                                                                                                                                              
               .insert({                                                                                                                                                                                    
                 title: eventModal.title ?? 'Untitled Event',                                                                                                                                               
-                descriptions: eventModal.descriptions ?? '',                                                                                                                                               
+                description: eventModal.description ?? '',                                                                                                                                               
                 event_date: eventModal.event_date ? new Date(eventModal.event_date).toISOString() : new Date().toISOString(),                                                                              
                 location: eventModal.location ?? '',                                                                                                                                                       
                 capacity: eventModal.capacity ?? 100,                                                                                                                                                      
-                availabla_seats: eventModal.availabla_seats ?? eventModal.capacity ?? 100,                                                                                                                 
+                available_seats: eventModal.available_seats ?? eventModal.capacity ?? 100,                                                                                                                 
                 price: eventModal.price ?? 0,                                                                                                                                                              
                 category: eventModal.category ?? 'General',                                                                                                                                                
                 organizer_id: user?.id ?? null,                                                                                                                                                            
@@ -208,7 +222,7 @@ import { useState, useEffect } from 'react';
         }                                                                                                                                                                                                  
       };                                                                                                                                                                                                   
                                                                                                                                                                                                            
-      // ── Event delete ───────────────────────────────────────────────────────────                                                                                                                       
+      //Event delete 
       const deleteEvent = async (id: number) => {                                                                                                                                                          
         if (!confirm('Delete this event? This cannot be undone.')) return;                                                                                                                                 
         const { error } = await supabase.from('events').delete().eq('id', id);                                                                                                                             
@@ -217,7 +231,7 @@ import { useState, useEffect } from 'react';
         setEvents(prev => prev.filter(e => e.id !== id));                                                                                                                                                  
       };                                                                                                                                                                                                   
                                                                                                                                                                                                            
-      // ── Booking status update ──────────────────────────────────────────────────                                                                                                                       
+      //  Booking status update                                                                                                                        
       const updateBookingStatus = async (id: number, status: string) => {                                                                                                                                  
         const { error } = await supabase.from('bookings').update({ status }).eq('id', id);                                                                                                                 
         if (error) return showToast('Failed to update booking', 'err');                                                                                                                                    
@@ -225,7 +239,7 @@ import { useState, useEffect } from 'react';
         showToast('Booking updated');                                                                                                                                                                      
       };                                                                                                                                                                                                   
                                                                                                                                                                                                            
-      // ── Stats ──────────────────────────────────────────────────────────────────                                                                                                                       
+      // Stats                                                                                                                       
       const totalRevenue = bookings                                                                                                                                                                        
         .filter(o => o.status === 'confirmed' || o.status === 'completed')                                                                                                                                 
         .reduce((s, o) => s + (o.total_price ?? 0), 0);                                                                                                                                                    
@@ -256,7 +270,7 @@ import { useState, useEffect } from 'react';
         );                                                                                                                                                                                                 
       }                                                                                                                                                                                                    
                                                                                                                                                                                                            
-      // ── Styles ─────────────────────────────────────────────────────────────────                                                                                                                       
+      //  Styles 
       const page: React.CSSProperties = {                                                                                                                                                                  
         minHeight: '100vh',                                                                                                                                                                                
         background: '#0a0a0f',                                                                                                                                                                             
@@ -454,18 +468,24 @@ import { useState, useEffect } from 'react';
                   </div>                                                                                                                                                                                   
                 </div>                                                                                                                                                                                     
                                                                                                                                                                                                            
-              // ── EVENTS TAB ──────────────────────────────────────────────────────                                                                                                                      
+              // EVENTS TAB                                                                                                                    
               ) : tab === 'events' ? (                                                                                                                                                                     
                 <div>                                                                                                                                                                                      
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>                                                                               
-                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>Events <span style={{ color: '#555', fontWeight: 400 }}>({events.length})</span></h2>                                         
-                    <button style={btnPrimary} onClick={() => setEventModal({                                                                                                                              
+                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>
+                      Events 
+                      <span style={{ color: '#555', fontWeight: 400 }}>({events.length})</span></h2>                                         
+                    <button 
+                    style={btnPrimary}
+                     onClick={() =>
+                       // Opens the modal pre-filled with sensible defaults for a new event
+                       setEventModal({                                                                                                                              
                       title: '',                                                                                                                                                                           
-                      descriptions: '',                                                                                                                                                                    
+                      description : '',                                                                                                                                                                    
                       event_date: new Date().toISOString(),                                                                                                                                                
                       location: '',                                                                                                                                                                        
                       capacity: 100,                                                                                                                                                                       
-                      availabla_seats: 100,                                                                                                                                                                
+                      available_seats: 100,                                                                                                                                                                
                       price: 0,                                                                                                                                                                            
                       category: 'General',                                                                                                                                                                 
                     })}>+ New Event</button>                                                                                                                                                               
@@ -491,7 +511,7 @@ import { useState, useEffect } from 'react';
                                 </td>                                                                                                                                                                      
                                 <td style={{ ...td, color: '#94a3b8' }}>{e.location ?? '—'}</td>                                                                                                           
                                 <td style={{ ...td, fontFamily: "'DM Mono', monospace" }}>{e.capacity ?? '—'}</td>                                                                                         
-                                <td style={{ ...td, fontFamily: "'DM Mono', monospace" }}>{e.availabla_seats ?? e.capacity ?? '—'}</td>                                                                    
+                                <td style={{ ...td, fontFamily: "'DM Mono', monospace" }}>{e.available_seats ?? e.capacity ?? '—'}</td>                                                                    
                                 <td style={{ ...td, fontFamily: "'DM Mono', monospace", color: '#a5f3fc' }}>${(e.price ?? 0).toFixed(2)}</td>                                                              
                                 <td style={td}>                                                                                                                                                            
                                   <div style={{ display: 'flex', gap: 8 }}>                                                                                                                                
@@ -508,7 +528,7 @@ import { useState, useEffect } from 'react';
                   </div>                                                                                                                                                                                   
                 </div>                                                                                                                                                                                     
                                                                                                                                                                                                            
-              // ── USERS TAB ───────────────────────────────────────────────────────                                                                                                                      
+              // USERS TAB                                                                                                                    
               ) : tab === 'users' ? (                                                                                                                                                                      
                 <div>                                                                                                                                                                                      
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>                                                                               
@@ -547,7 +567,7 @@ import { useState, useEffect } from 'react';
                   </div>                                                                                                                                                                                   
                 </div>                                                                                                                                                                                     
                                                                                                                                                                                                            
-              // ── BOOKINGS TAB ────────────────────────────────────────────────────                                                                                                                      
+              // BOOKINGS TAB 
               ) : (                                                                                                                                                                                        
                 <div>                                                                                                                                                                                      
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>                                                                               
@@ -603,7 +623,7 @@ import { useState, useEffect } from 'react';
             ))}                                                                                                                                                                                            
           </div>                                                                                                                                                                                           
                                                                                                                                                                                                            
-          {/* ── Event Modal (Create / Edit) ───────────────────────────────────────── */}                                                                                                                 
+          {/* ── Event Modal (Create / Edit) */}           
           {eventModal !== null && (                                                                                                                                                                        
             <div style={{                                                                                                                                                                                  
               position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)',                                                                                                                                 
