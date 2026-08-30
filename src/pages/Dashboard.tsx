@@ -11,7 +11,7 @@ type Booking = Database['public']['Tables']['bookings']['Row'];
 type Event = Database['public']['Tables']['events']['Row'];
 
 interface BookingWithEvent extends Booking {
-  event: Event;
+  event: Event | null;
 }
 
 // moved BookingCard OUTSIDE Dashboard to prevent re-creation on every render
@@ -22,6 +22,8 @@ interface BookingCardProps {
 }
 
 const BookingCard = ({ booking, onCancel, onNavigate }: BookingCardProps) => {
+  if (!booking.event) return null;
+
   const eventDate = new Date(booking.event.event_date || '');
 
   // Only format the date ,if its actually valid 
@@ -113,7 +115,7 @@ const BookingCard = ({ booking, onCancel, onNavigate }: BookingCardProps) => {
           variant="ghost"
           fullWidth
           className="mt-4"
-          onClick={() => onNavigate(booking.event.id)}
+          onClick={() => booking.event && onNavigate(booking.event.id)}
         >
           View Event Details
         </Button>
@@ -151,7 +153,11 @@ export function Dashboard() {
 
       //Replaced `any` with the proper BookingWithEvent type
       data?.forEach((booking: BookingWithEvent) => {
-        if (new Date(booking.event.event_date) >= now && booking.status === 'confirmed') {
+        if(!booking.event) {
+          past.push(booking);
+          return;
+        }
+        if (new Date(booking.event.event_date || '') >= now && booking.status === 'confirmed') {
           upcoming.push(booking);
         } else {
           past.push(booking);
@@ -182,7 +188,7 @@ export function Dashboard() {
     if (!user) return;
 
     try {
-      const response = await fetch (`${import.meta.env.VITE_SUPABASE_URL}http://localhost:8000/api/bookings/cancel`, {
+      const response = await fetch (`${import.meta.env.VITE_EBS_API_URL}/api/bookings/cancel`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json'},
         body: JSON.stringify({

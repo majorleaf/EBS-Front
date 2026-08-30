@@ -10,16 +10,22 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, onClick }: EventCardProps) {
-  const eventDate = new Date(event.event_date);
-  const formattedDate = eventDate.toLocaleDateString('en-US', {
+  const eventDate = new Date(event.event_date || ' ');
+  const isValidDate = !isNaN(eventDate.getTime());
+
+  const formattedDate = isValidDate 
+  ? eventDate.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
-  });
-  const formattedTime = eventDate.toLocaleTimeString('en-US', {
+  })
+  : 'Date not available';
+  const formattedTime = isValidDate 
+  ? eventDate.toLocaleTimeString('en-US', {
     hour: 'numeric',
     minute: '2-digit',
-  });
+  })
+  : 'Time not available';
 
   return (
     <Card hoverable onClick={onClick}>
@@ -67,7 +73,7 @@ export function EventCard({ event, onClick }: EventCardProps) {
           <div className="flex items-center gap-2">
             <DollarSign size={16} />
             <span className="font-semibold text-gray-900">
-              {event.price === 0 ? 'Free' : `$${event.price.toFixed(2)}`}
+              {(event.price ?? 0) === 0 ? 'Free' : `$${(event.price ?? 0).toFixed(2)}`}
             </span>
           </div>
         </div>

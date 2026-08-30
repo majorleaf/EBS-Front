@@ -37,7 +37,7 @@ import { useState, useEffect } from 'react';
       );                                                                                                                                                                                                   
     }                                                                                                                                                                                                      
                                                                                                                                                                                                            
-    // ── Badge ────────────────────────────────────────────────────────────────────                                                                                                                       
+    // ── Badge 
     function Badge({ status }: { status: string | null }) {                                                                                                                                                
       const map: Record<string, { bg: string; color: string }> = {                                                                                                                                         
         active:    { bg: 'rgba(34,197,94,0.15)',  color: '#4ade80' },                                                                                                                                      
@@ -175,7 +175,7 @@ import { useState, useEffect } from 'react';
           const isEdit = typeof eventModal.id === 'number';                                                                                                                                                
                                                                                                                                                                                                            
           if (isEdit) {                                                                                                                                                                                    
-            const { id, created_at, ...fields } = eventModal as Event;                                                                                                                                     
+            const { id, ...fields } = eventModal as Event;                                                                                                                                     
             const { error } = await supabase                                                                                                                                                               
               .from('events')                                                                                                                                                                              
               .update({                                                                                                                                                                                    

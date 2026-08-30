@@ -52,7 +52,7 @@ export function Profile() {
     ? new Date(profile.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : '—';
 
-  // ── Styles ──────────────────────────────────────────────────────────────
+  //  Styles
   const page: React.CSSProperties = {
     minHeight: '100vh',
     background: '#0a0a0f',
@@ -136,7 +136,7 @@ export function Profile() {
 
       <div style={{ maxWidth: 640, margin: '0 auto', padding: '40px 24px' }}>
 
-        {/* ── Avatar + name card ─────────────────────────────────────────── */}
+        {/*  Avatar + name card  */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -244,7 +244,7 @@ export function Profile() {
           )}
         </motion.div>
 
-        {/* ── Info cards ─────────────────────────────────────────────────── */}
+        {/*  Info cards  */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
@@ -255,7 +255,7 @@ export function Profile() {
             { icon: <Mail size={14} color="#6366f1" />, label: 'Email', value: user?.email ?? '—' },
             { icon: <Calendar size={14} color="#8b5cf6" />, label: 'Member since', value: joinedDate },
             { icon: <Shield size={14} color={isAdmin ? '#c084fc' : '#60a5fa'} />, label: 'Role', value: isAdmin ? 'Administrator' : 'User' },
-            { icon: <User size={14} color="#06b6d4" />, label: 'User ID', value: user?.id?.slice(0, 8) + '…' ?? '—' },
+            { icon: <User size={14} color="#06b6d4" />, label: 'User ID', value: user?.id ? user.id.slice(0, 8) + '…' : '—' },
           ].map(item => (
             <div key={item.label} style={{
               background: 'rgba(255,255,255,0.025)',
@@ -280,7 +280,7 @@ export function Profile() {
           ))}
         </motion.div>
 
-        {/* ── Admin quick link ───────────────────────────────────────────── */}
+        {/*  Admin quick link  */}
         {isAdmin && (
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -313,7 +313,7 @@ export function Profile() {
           </motion.div>
         )}
 
-        {/* ── My bookings quick link ─────────────────────────────────────── */}
+        {/*  My bookings quick link */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
