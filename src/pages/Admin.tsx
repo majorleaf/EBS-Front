@@ -186,7 +186,8 @@ import { useState, useEffect } from 'react';
                 capacity: fields.capacity,                                                                                                                                                                 
                 availabla_seats: fields.available_seats ?? fields.capacity,                                                                                                                                
                 price: fields.price,                                                                                                                                                                       
-                category: fields.category ?? 'General',                                                                                                                                                    
+                category: fields.category ?? 'General',
+                image_url: fields.image_url || null,                                                                                                                                                  
               })                                                                                                                                                                                           
               .eq('id', id);                                                                                                                                                                               
                                                                                                                                                                                                            
@@ -203,7 +204,8 @@ import { useState, useEffect } from 'react';
                 capacity: eventModal.capacity ?? 100,                                                                                                                                                      
                 available_seats: eventModal.available_seats ?? eventModal.capacity ?? 100,                                                                                                                 
                 price: eventModal.price ?? 0,                                                                                                                                                              
-                category: eventModal.category ?? 'General',                                                                                                                                                
+                category: eventModal.category ?? 'General', 
+                image_url: eventModal.image_url || null,                                                                                                                                               
                 organizer_id: user?.id ?? null,                                                                                                                                                            
                 is_deleted: false,                                                                                                                                                                         
               });                                                                                                                                                                                          
@@ -706,7 +708,29 @@ import { useState, useEffect } from 'react';
                     onChange={e => setEventModal(prev => ({ ...prev, location: e.target.value }))}                                                                                                         
                     style={input}                                                                                                                                                                          
                   />                                                                                                                                                                                       
-                </div>                                                                                                                                                                                     
+                </div>     
+
+                {/* image URL */}
+                <div style={{ marginBottom: 16}}>
+                  <label>
+                    Flyer Image 
+                  </label>
+                  <input
+                  type='text'
+                  placeholder='https://example.com/flyer.jpg'
+                  value={eventModal.image_url ?? ''}
+                  onChange={(e) => setEventModal((prev) => ({ ...prev, image_url: e.target.value}))}
+                  style={input}
+                  />
+                  {eventModal.image_url && (
+                    <img 
+                      src={eventModal.image_url}
+                      alt='Preview'
+                      style={{ marginTop: 10, width: '100%', height: 140, objectFit: 'cover', borderRadius: 10, border: '1px solid rgba(255,255,255,0.1)'}}
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                  )}
+                </div>                                                                                                                                                                                
                                                                                                                                                                                                            
                 {/* Capacity & Price in 2 columns */}                                                                                                                                                      
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 24 }}>                                                                                               
