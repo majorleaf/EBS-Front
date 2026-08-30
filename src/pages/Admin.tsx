@@ -15,7 +15,7 @@ import { useState, useEffect } from 'react';
                                                                                                                                                                                                            
     type Tab = 'overview' | 'events' | 'users' | 'orders';                                                                                                                                                 
                                                                                                                                                                                                            
-    // ── Stat Card ────────────────────────────────────────────────────────────────                                                                                                                       
+    // ── Stat Card ─                                                                                                                      
     function StatCard({ label, value, sub, accent }: { label: string; value: string | number; sub?: string; accent: string }) {                                                                            
       return (                                                                                                                                                                                             
         <div style={{                                                                                                                                                                                      
@@ -487,8 +487,10 @@ import { useState, useEffect } from 'react';
                       capacity: 100,                                                                                                                                                                       
                       available_seats: 100,                                                                                                                                                                
                       price: 0,                                                                                                                                                                            
-                      category: 'General',                                                                                                                                                                 
-                    })}>+ New Event</button>                                                                                                                                                               
+                      category: 'General', 
+                      image_url: '', // NEW IMAGE FLYER                                                                                                                                                                
+                    })
+                    }>+ New Event</button>                                                                                                                                                               
                   </div>                                                                                                                                                                                   
                   <div style={card}>                                                                                                                                                                       
                     <div style={{ overflowX: 'auto' }}>                                                                                                                                                    
