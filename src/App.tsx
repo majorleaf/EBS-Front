@@ -59,6 +59,17 @@ function App() {
             }
           />
 
+          <Route 
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Profile />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/admin"
             element={
@@ -69,6 +80,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Catches all unrecognized paths redirects to the landing page instead of rendering blank pages */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
